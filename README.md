@@ -2,42 +2,36 @@
 
 <p align="center">
   Backend and distributed systems.<br>
-  I build things from scratch to find out how they actually work.
+  I rebuild things from scratch until I stop being surprised by them.
 </p>
 
 <p align="center">
-  <a href="https://linkedin.com/in/deepak-singh-b60107252">LinkedIn</a> ·
-  <a href="https://github.com/deepakSingh023?tab=repositories">Repositories</a>
+  <a href="https://linkedin.com/in/deepak-singh-b60107252">linkedin</a> ·
+  <a href="https://github.com/deepakSingh023?tab=repositories">repos</a>
 </p>
 
-<br>
+```console
+deepak@home:~$ whoami
+deepak singh, backend / distributed systems
 
-> *"What I cannot create, I do not understand."*
-> Richard Feynman, left on his blackboard in 1988
-
-```
-$ cat ~/.plan
-
-name       Deepak Singh
-role       backend / distributed systems
-now        core-reactor-kv: a thread-per-core key-value store in Rust
+deepak@home:~$ cat /proc/now
+building   core-reactor-kv, a thread-per-core KV store in Rust
+reading    epoll(7), man pages, other people's storage engines
 learning   Rust, Linux networking, async I/O
-likes      taking a system apart by rebuilding it
-languages  Java, C, Rust, TypeScript
-reach      linkedin.com/in/deepak-singh-b60107252
+
+deepak@home:~$ ls ~/langs
+java  c  rust  typescript
 ```
 
-## What I've built
+## About
 
-| Project | What it is | Built with |
-|---|---|---|
-| [**social-backend**](https://github.com/deepakSingh023/social-backend) | 11 microservices behind a reactive API gateway. Kafka for async work, Redis for idempotency and locks, fan-out-on-write feeds, and chat that routes each message straight to the instance holding the recipient's socket. Traced with OpenTelemetry, metrics in Prometheus and Grafana. | Java 17, Spring Boot, Kafka, Redis, MongoDB |
-| [**e-meet**](https://github.com/deepakSingh023/e-meet) | WebRTC video calls with my own signaling server. Screen sharing renegotiates the live connection instead of opening a new one, and signaling nodes scale out over Redis Pub/Sub. | React, TypeScript, Spring Boot, Redis |
-| [**core-reactor-kv**](https://github.com/deepakSingh023/core-reactor-kv) | Shared-nothing key-value store. One epoll reactor per core, keys hashed to cores, leader election and replicated writes across a 4-node cluster. | Rust, epoll |
-| [**lsm-engine**](https://github.com/deepakSingh023/lsm-engine) | LSM-tree storage engine written from scratch: write-ahead log, skip-list memtable, SSTables with a sparse index, tombstone deletes, and a CLI that simulates a crash. | Java |
-| [**tcp-server**](https://github.com/deepakSingh023/tcp-server) | HTTP server in C. Non-blocking epoll accept loop, a worker thread pool, and a completion queue that wakes the loop through an eventfd. Parser and router are hand-written. | C |
+I like the layer below the framework. Using Kafka is fine, but I would rather know why a partition log is fast, so I end up writing a smaller, worse version of it and learning what the real one is protecting me from.
 
-## One node of core-reactor-kv
+That habit produced an LSM engine, an HTTP server in C, a WebRTC signaling server, and now a key-value store that gives every CPU core its own event loop. I'm at my best when the problem is "why does this fall over at 3 a.m." rather than "which button does this".
+
+## Currently
+
+**core-reactor-kv** is the main thing. One epoll reactor per core, no shared state, keys hashed to the core that owns them. A core that gets a key it doesn't own forwards the request over an eventfd-backed channel mesh. On top of that sit leader election and replicated writes across a 4-node cluster. This is also where I'm learning Rust properly, so expect the commit history to get less embarrassing over time.
 
 ```
  client ── TCP ──▶ epoll reactor
@@ -56,9 +50,24 @@ reach      linkedin.com/in/deepak-singh-b60107252
                peers (4-node cluster)
 ```
 
-No shared state between cores. A core that doesn't own a key hands the request to the one that does.
+## Things I've built
 
-## Languages
+**[social-backend](https://github.com/deepakSingh023/social-backend)** `java 17 · spring boot · kafka · redis · mongodb`
+A social platform split into 11 microservices behind a reactive gateway. Feeds are fanned out on write. Redis handles idempotency keys and distributed locks. Chat messages go straight to the instance that holds the recipient's WebSocket instead of being broadcast. Everything is traced with OpenTelemetry and graphed in Prometheus and Grafana, because I wanted to see the failures, not guess at them.
+
+**[e-meet](https://github.com/deepakSingh023/e-meet)** `react · typescript · spring boot · redis`
+WebRTC video calls on my own signaling server. Screen sharing renegotiates the existing peer connection rather than opening a second one, and signaling nodes scale horizontally over Redis Pub/Sub.
+
+**[core-reactor-kv](https://github.com/deepakSingh023/core-reactor-kv)** `rust · epoll`
+A shared-nothing key-value store: one epoll reactor per core, keys hashed to their owning core, and leader election plus replicated writes across a 4-node cluster. Still in progress, details in the section above.
+
+**[tcp-server](https://github.com/deepakSingh023/tcp-server)** `c`
+An HTTP server with a non-blocking epoll accept loop and a worker thread pool. Finished work comes back through a completion queue that wakes the loop via eventfd. The parser and router are hand-written, so every malformed request was my own bug to find.
+
+**[lsm-engine](https://github.com/deepakSingh023/lsm-engine)** `java`
+A storage engine from the ground up: write-ahead log, skip-list memtable, SSTables with a sparse index, tombstone deletes. The CLI can simulate a crash so I could watch recovery actually work.
+
+## Language mix
 
 <p align="center">
   <picture>
@@ -67,13 +76,8 @@ No shared state between cores. A core that doesn't own a key hands the request t
   </picture>
 </p>
 
-## Margin notes
+## Get in touch
 
-> *"A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable."*
-> Leslie Lamport
+If you're working on storage engines, networking, or anything where the failure modes are the interesting part, I'd like to hear about it. Find me on [LinkedIn](https://linkedin.com/in/deepak-singh-b60107252).
 
-> *"Simplicity is prerequisite for reliability."*
-> Edsger W. Dijkstra
-
-> *"Everything fails all the time."*
-> Werner Vogels
+<sub>"What I cannot create, I do not understand." Feynman, left on his blackboard in 1988.</sub>
