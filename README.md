@@ -1,6 +1,16 @@
-# Deepak Singh
+<h1 align="center">Deepak Singh</h1>
 
-Backend and distributed systems. I build things from scratch to find out how they actually work.
+<p align="center">
+  Backend and distributed systems.<br>
+  I build things from scratch to find out how they actually work.
+</p>
+
+<p align="center">
+  <a href="https://linkedin.com/in/deepak-singh-b60107252">LinkedIn</a> ·
+  <a href="https://github.com/deepakSingh023?tab=repositories">Repositories</a>
+</p>
+
+<br>
 
 > *"What I cannot create, I do not understand."*
 > Richard Feynman, left on his blackboard in 1988
@@ -27,22 +37,37 @@ reach      linkedin.com/in/deepak-singh-b60107252
 | [**lsm-engine**](https://github.com/deepakSingh023/lsm-engine) | LSM-tree storage engine written from scratch: write-ahead log, skip-list memtable, SSTables with a sparse index, tombstone deletes, and a CLI that simulates a crash. | Java |
 | [**tcp-server**](https://github.com/deepakSingh023/tcp-server) | HTTP server in C. Non-blocking epoll accept loop, a worker thread pool, and a completion queue that wakes the loop through an eventfd. Parser and router are hand-written. | C |
 
-## Stats
+## One node of core-reactor-kv
+
+```
+ client ── TCP ──▶ epoll reactor
+                        │
+                 hash(key) % 4
+                        │
+      ┌─────────┬───────┴───┬─────────┐
+      ▼         ▼           ▼         ▼
+   core 0    core 1      core 2    core 3
+   epoll     epoll       epoll     epoll
+      ▲         ▲           ▲         ▲
+      └──── eventfd + channel mesh ───┘
+                        │
+         leader election · replicated writes
+                        │
+               peers (4-node cluster)
+```
+
+No shared state between cores. A core that doesn't own a key hands the request to the one that does.
+
+## Languages
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-stats.vercel.app/api?username=deepakSingh023&show_icons=true&hide_border=true&include_all_commits=true&theme=github_dark">
-    <img alt="GitHub stats and grade" src="https://github-readme-stats.vercel.app/api?username=deepakSingh023&show_icons=true&hide_border=true&include_all_commits=true">
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=deepakSingh023&layout=compact&hide_border=true&langs_count=6&theme=github_dark">
-    <img alt="Most used languages" src="https://github-readme-stats.vercel.app/api/top-langs/?username=deepakSingh023&layout=compact&hide_border=true&langs_count=6">
+    <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=deepakSingh023&layout=compact&hide_border=true&langs_count=6&hide=html,css,shell,dockerfile,makefile&theme=github_dark">
+    <img alt="Most used languages" src="https://github-readme-stats.vercel.app/api/top-langs/?username=deepakSingh023&layout=compact&hide_border=true&langs_count=6&hide=html,css,shell,dockerfile,makefile">
   </picture>
 </p>
 
 ## Margin notes
-
-Lines I keep coming back to while building this stuff.
 
 > *"A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable."*
 > Leslie Lamport
@@ -52,10 +77,3 @@ Lines I keep coming back to while building this stuff.
 
 > *"Everything fails all the time."*
 > Werner Vogels
-
-> *"There are only two hard things in Computer Science: cache invalidation and naming things."*
-> Phil Karlton
-
----
-
-[LinkedIn](https://linkedin.com/in/deepak-singh-b60107252)
